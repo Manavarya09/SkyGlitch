@@ -1,40 +1,695 @@
+/* SkyGlitch - Cyberpunk Flight Simulator Styles */
+
+/* CSS Variables for Cyberpunk Theme */
+:root {
+    --primary-cyan: #00ffff;
+    --primary-green: #00ff88;
+    --primary-purple: #8800ff;
+    --primary-pink: #ff0088;
+    --bg-dark: #0a0a0a;
+    --bg-darker: #050505;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-accent: #00ff88;
+    --border-glow: #00ffff;
+    --warning-red: #ff3333;
+    --warning-orange: #ff8800;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-  margin: 0;
-  overflow: hidden;
-  background: black;
-  font-family: monospace;
-  color: #0ff;
+    font-family: 'Orbitron', monospace;
+    background: var(--bg-darker);
+    color: var(--text-primary);
+    overflow: hidden;
+    user-select: none;
+    cursor: crosshair;
 }
+
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, var(--bg-darker), var(--bg-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 1s ease-out;
+}
+
+.loading-content {
+    text-align: center;
+    max-width: 500px;
+}
+
+.glitch-logo h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--primary-cyan);
+    position: relative;
+    text-shadow: 
+        0 0 10px var(--primary-cyan),
+        0 0 20px var(--primary-cyan),
+        0 0 40px var(--primary-cyan);
+    animation: glitch-text 2s infinite;
+}
+
+.glitch-logo h1::before,
+.glitch-logo h1::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch-logo h1::before {
+    animation: glitch-1 0.5s infinite;
+    color: var(--primary-pink);
+    z-index: -1;
+}
+
+.glitch-logo h1::after {
+    animation: glitch-2 0.5s infinite;
+    color: var(--primary-green);
+    z-index: -2;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 2rem 0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-cyan), var(--primary-green));
+    width: 0%;
+    animation: loading-progress 3s ease-out forwards;
+    box-shadow: 0 0 10px var(--primary-cyan);
+}
+
+.loading-text {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-accent);
+    font-size: 1rem;
+    animation: pulse 1s infinite;
+}
+
+/* Game Container */
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #001122, #000000);
+}
+
+/* HUD Styles */
 .hud {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 1rem;
-  color: #0f0;
-  text-shadow: 0 0 5px #0ff;
-  font-size: 14px;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
 }
-.panel {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 1rem;
-  border: 1px solid #0ff;
-  margin-bottom: 1rem;
+
+/* Status Bar */
+.status-bar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border: 1px solid var(--border-glow);
+    border-radius: 5px;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.3),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
 }
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-item .label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.status-item .value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-accent);
+}
+
+/* HUD Panels */
+.hud-panel {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--border-glow);
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 200px;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 255, 0.3),
+        inset 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.left-panel {
+    top: 100px;
+    left: 20px;
+}
+
+.right-panel {
+    top: 100px;
+    right: 20px;
+}
+
+.panel-header {
+    font-size: 0.8rem;
+    color: var(--primary-cyan);
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid var(--primary-cyan);
+    padding-bottom: 5px;
+}
+
+/* Flight Data Rows */
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.data-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    min-width: 40px;
+}
+
+.data-value {
+    color: var(--text-accent);
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: right;
+    min-width: 60px;
+}
+
+.data-unit {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* System Rows */
+.system-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.system-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    min-width: 40px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.system-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.system-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
+.system-fill.fuel {
+    background: linear-gradient(90deg, var(--warning-red), var(--warning-orange), var(--text-accent));
+    box-shadow: 0 0 5px var(--text-accent);
+}
+
+.system-fill.hull {
+    background: linear-gradient(90deg, var(--warning-red), var(--primary-cyan));
+    box-shadow: 0 0 5px var(--primary-cyan);
+}
+
+.system-fill.engine {
+    background: linear-gradient(90deg, var(--warning-red), var(--primary-purple));
+    box-shadow: 0 0 5px var(--primary-purple);
+}
+
+.system-value {
+    color: var(--text-accent);
+    font-size: 0.8rem;
+    min-width: 40px;
+    text-align: right;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+/* Radar Container */
+.radar-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--text-accent);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 136, 0.3),
+        inset 0 0 15px rgba(0, 255, 136, 0.1);
+}
+
+.radar-header {
+    font-size: 0.7rem;
+    color: var(--text-accent);
+    text-align: center;
+    margin-bottom: 10px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
 .radar {
-  width: 100px;
-  height: 100px;
-  border: 2px solid #0ff;
-  border-radius: 50%;
-  animation: spin 5s linear infinite;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.1), transparent);
 }
-.log {
-  font-size: 12px;
-  margin-top: 10px;
-  color: #ff00ff;
+
+/* Mission Log */
+.mission-log {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    max-height: 200px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--text-accent);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 136, 0.3),
+        inset 0 0 10px rgba(0, 255, 136, 0.1);
 }
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+
+.log-header {
+    background: rgba(0, 255, 136, 0.2);
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    color: var(--text-accent);
+    font-family: 'Share Tech Mono', monospace;
+    border-bottom: 1px solid var(--text-accent);
 }
+
+.log-content {
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.log-entry {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    opacity: 0;
+    animation: fadeInLog 0.5s ease-out forwards;
+}
+
+.log-entry:last-child {
+    color: var(--text-accent);
+}
+
+/* Crosshair */
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+}
+
+.crosshair-h,
+.crosshair-v {
+    position: absolute;
+    background: var(--primary-cyan);
+    box-shadow: 0 0 5px var(--primary-cyan);
+}
+
+.crosshair-h {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: translateY(-50%);
+}
+
+.crosshair-v {
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+
+.crosshair-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border: 1px solid var(--primary-cyan);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 5px var(--primary-cyan);
+}
+
+/* Controls Info */
+.controls-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--border-glow);
+    border-radius: 5px;
+    padding: 15px;
+    min-width: 200px;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.3),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.controls-info:hover {
+    opacity: 1;
+}
+
+.controls-header {
+    font-size: 0.8rem;
+    color: var(--primary-cyan);
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid var(--primary-cyan);
+    padding-bottom: 5px;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+}
+
+.key {
+    color: var(--text-accent);
+    font-weight: bold;
+    background: rgba(0, 255, 136, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--text-accent);
+}
+
+.desc {
+    color: var(--text-secondary);
+}
+
+/* Glitch Effects */
+.glitch {
+    animation: glitch-text 2s infinite;
+}
+
+.glitch-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 0, 136, 0.1),
+        transparent,
+        rgba(0, 255, 255, 0.1),
+        transparent
+    );
+    animation: glitch-overlay 0.1s infinite;
+}
+
+/* Animations */
+@keyframes glitch-text {
+    0%, 90%, 100% {
+        transform: translate(0);
+    }
+    10% {
+        transform: translate(-2px, 2px);
+    }
+    20% {
+        transform: translate(2px, -2px);
+    }
+    30% {
+        transform: translate(-2px, -2px);
+    }
+    40% {
+        transform: translate(2px, 2px);
+    }
+    50% {
+        transform: translate(-2px, 2px);
+    }
+    60% {
+        transform: translate(2px, -2px);
+    }
+    70% {
+        transform: translate(-2px, -2px);
+    }
+    80% {
+        transform: translate(2px, 2px);
+    }
+}
+
+@keyframes glitch-1 {
+    0%, 90%, 100% {
+        transform: translate(0);
+    }
+    10% {
+        transform: translate(-2px, 2px);
+    }
+    20% {
+        transform: translate(2px, -2px);
+    }
+    30% {
+        transform: translate(-2px, -2px);
+    }
+    40% {
+        transform: translate(2px, 2px);
+    }
+    50% {
+        transform: translate(-2px, 2px);
+    }
+    60% {
+        transform: translate(2px, -2px);
+    }
+    70% {
+        transform: translate(-2px, -2px);
+    }
+    80% {
+        transform: translate(2px, 2px);
+    }
+}
+
+@keyframes glitch-2 {
+    0%, 90%, 100% {
+        transform: translate(0);
+    }
+    5% {
+        transform: translate(2px, -2px);
+    }
+    15% {
+        transform: translate(-2px, 2px);
+    }
+    25% {
+        transform: translate(2px, 2px);
+    }
+    35% {
+        transform: translate(-2px, -2px);
+    }
+    45% {
+        transform: translate(2px, -2px);
+    }
+    55% {
+        transform: translate(-2px, 2px);
+    }
+    65% {
+        transform: translate(2px, 2px);
+    }
+    75% {
+        transform: translate(-2px, -2px);
+    }
+    85% {
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes loading-progress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes fadeInLog {
+    0% { opacity: 0; transform: translateX(-10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes glitch-overlay {
+    0%, 90%, 100% { opacity: 0; }
+    5%, 10% { opacity: 0.1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hud-panel {
+        min-width: 150px;
+        padding: 10px;
+    }
+    
+    .left-panel {
+        top: 80px;
+        left: 10px;
+    }
+    
+    .right-panel {
+        top: 80px;
+        right: 10px;
+    }
+    
+    .mission-log {
+        width: 250px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .controls-info {
+        top: 10px;
+        left: 10px;
+        min-width: 150px;
+    }
+    
+    .status-bar {
+        top: 10px;
+        gap: 1rem;
+        padding: 8px 15px;
+    }
+    
+    .radar-container {
+        bottom: 10px;
+    }
+    
+    .radar {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .glitch-logo h1 {
+        font-size: 2.5rem;
+    }
+    
+    .status-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .hud-panel {
+        min-width: 120px;
+        padding: 8px;
+    }
+    
+    .mission-log {
+        width: 200px;
+    }
+    
+    .controls-info {
+        min-width: 120px;
+    }
+}
+
+/* Scrollbar Styling */
+.log-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.log-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.log-content::-webkit-scrollbar-thumb {
+    background: var(--text-accent);
+    border-radius: 2px;
+}
+
+.log-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-cyan);
+}
+
+/* Hidden class for loading screen */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
