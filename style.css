@@ -1,0 +1,40 @@
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  font-family: monospace;
+  color: #0ff;
+}
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+  color: #0f0;
+  text-shadow: 0 0 5px #0ff;
+  font-size: 14px;
+  pointer-events: none;
+}
+.panel {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+  border: 1px solid #0ff;
+  margin-bottom: 1rem;
+}
+.radar {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #0ff;
+  border-radius: 50%;
+  animation: spin 5s linear infinite;
+}
+.log {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #ff00ff;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

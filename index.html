@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyGlitch</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="hud" class="hud">
+    <div class="panel">
+      <div>Altitude: <span id="altitude">0</span>m</div>
+      <div>Speed: <span id="speed">0</span>km/h</div>
+      <div>Fuel: <span id="fuel">100</span>%</div>
+      <div>Damage: <span id="damage">0</span>%</div>
+    </div>
+    <div id="radar" class="radar"></div>
+    <div class="log">[SYSTEM] Initializing flight protocol...</div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r148/three.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
