@@ -1,25 +1,211 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkyGlitch</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyGlitch - Flight Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
-  <div id="hud" class="hud">
-    <div class="panel">
-      <div>Altitude: <span id="altitude">0</span>m</div>
-      <div>Speed: <span id="speed">0</span>km/h</div>
-      <div>Fuel: <span id="fuel">100</span>%</div>
-      <div>Damage: <span id="damage">0</span>%</div>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="glitch-logo">
+                <h1 data-text="SKYGLITCH">SKYGLITCH</h1>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <div class="loading-text">INITIALIZING FLIGHT SYSTEMS...</div>
+        </div>
     </div>
-    <div id="radar" class="radar"></div>
-    <div class="log">[SYSTEM] Initializing flight protocol...</div>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r148/three.min.js"></script>
-  <script src="main.js"></script>
+
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="game-container">
+        <!-- 3D Canvas -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Cockpit HUD Overlay -->
+        <div id="hud" class="hud">
+            <!-- Top Status Bar -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="label">MISSION</span>
+                    <span id="missionStatus" class="value">PATROL</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">SYSTEM</span>
+                    <span id="systemStatus" class="value glitch">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">THREAT</span>
+                    <span id="threatLevel" class="value">LOW</span>
+                </div>
+            </div>
+
+            <!-- Left Panel - Flight Data -->
+            <div class="hud-panel left-panel">
+                <div class="panel-header">FLIGHT DATA</div>
+                <div class="data-row">
+                    <span class="data-label">ALT</span>
+                    <span id="altitude" class="data-value">0000</span>
+                    <span class="data-unit">M</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">SPD</span>
+                    <span id="speed" class="data-value">000</span>
+                    <span class="data-unit">KM/H</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">HDG</span>
+                    <span id="heading" class="data-value">000</span>
+                    <span class="data-unit">°</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">THR</span>
+                    <span id="throttle" class="data-value">00</span>
+                    <span class="data-unit">%</span>
+                </div>
+            </div>
+
+            <!-- Right Panel - Systems -->
+            <div class="hud-panel right-panel">
+                <div class="panel-header">SYSTEMS</div>
+                <div class="system-row">
+                    <span class="system-label">FUEL</span>
+                    <div class="system-bar">
+                        <div id="fuelBar" class="system-fill fuel"></div>
+                    </div>
+                    <span id="fuel" class="system-value">100%</span>
+                </div>
+                <div class="system-row">
+                    <span class="system-label">HULL</span>
+                    <div class="system-bar">
+                        <div id="hullBar" class="system-fill hull"></div>
+                    </div>
+                    <span id="hull" class="system-value">100%</span>
+                </div>
+                <div class="system-row">
+                    <span class="system-label">ENG</span>
+                    <div class="system-bar">
+                        <div id="engineBar" class="system-fill engine"></div>
+                    </div>
+                    <span id="engine" class="system-value">100%</span>
+                </div>
+            </div>
+
+            <!-- Center Bottom - Radar -->
+            <div class="radar-container">
+                <div class="radar-header">TACTICAL RADAR</div>
+                <svg id="radar" class="radar" viewBox="0 0 200 200">
+                    <defs>
+                        <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.3"/>
+                            <stop offset="70%" style="stop-color:#00ff88;stop-opacity:0.1"/>
+                            <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+                        </radialGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Radar Background -->
+                    <circle cx="100" cy="100" r="90" fill="url(#radarGradient)" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.5"/>
+                    <circle cx="100" cy="100" r="30" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.5"/>
+                    
+                    <!-- Radar Lines -->
+                    <line x1="100" y1="10" x2="100" y2="190" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+                    <line x1="10" y1="100" x2="190" y2="100" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+                    
+                    <!-- Radar Sweep -->
+                    <g id="radarSweep" filter="url(#glow)">
+                        <line x1="100" y1="100" x2="100" y2="10" stroke="#00ff88" stroke-width="2" opacity="0.8">
+                            <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="3s" repeatCount="indefinite"/>
+                        </line>
+                    </g>
+                    
+                    <!-- Radar Blips -->
+                    <g id="radarBlips"></g>
+                </svg>
+            </div>
+
+            <!-- Mission Log -->
+            <div class="mission-log">
+                <div class="log-header">MISSION LOG</div>
+                <div id="logContent" class="log-content">
+                    <div class="log-entry">[00:00] FLIGHT SYSTEMS INITIALIZED</div>
+                    <div class="log-entry">[00:01] ENGINES ONLINE</div>
+                    <div class="log-entry">[00:02] NAVIGATION ACTIVE</div>
+                </div>
+            </div>
+
+            <!-- Crosshair -->
+            <div class="crosshair">
+                <div class="crosshair-h"></div>
+                <div class="crosshair-v"></div>
+                <div class="crosshair-center"></div>
+            </div>
+
+            <!-- Glitch Overlay -->
+            <div id="glitchOverlay" class="glitch-overlay"></div>
+        </div>
+
+        <!-- Controls Info -->
+        <div id="controlsInfo" class="controls-info">
+            <div class="controls-header">FLIGHT CONTROLS</div>
+            <div class="control-item">
+                <span class="key">WASD</span>
+                <span class="desc">Pitch & Roll</span>
+            </div>
+            <div class="control-item">
+                <span class="key">Q/E</span>
+                <span class="desc">Yaw</span>
+            </div>
+            <div class="control-item">
+                <span class="key">SHIFT</span>
+                <span class="desc">Throttle Up</span>
+            </div>
+            <div class="control-item">
+                <span class="key">CTRL</span>
+                <span class="desc">Throttle Down</span>
+            </div>
+            <div class="control-item">
+                <span class="key">SPACE</span>
+                <span class="desc">Brake</span>
+            </div>
+            <div class="control-item">
+                <span class="key">C</span>
+                <span class="desc">Toggle Camera</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="engineSound" loop>
+        <source src="assets/audio/engine.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="windSound" loop>
+        <source src="assets/audio/wind.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="alertSound">
+        <source src="assets/audio/alert.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="glitchSound">
+        <source src="assets/audio/glitch.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r148/three.min.js"></script>
+    <script src="main.js"></script>
+    <script src="game-functions.js"></script>
+    <script src="physics.js"></script>
 </body>
 </html>
